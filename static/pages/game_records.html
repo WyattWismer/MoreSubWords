@@ -1,0 +1,8 @@
+{{range .Records}}
+<ul>
+    <li><b>{{.Player.Name}}</b> {{.Score}}</li>
+    {{range .Words}}
+    <li>{{.}}</li>
+    {{end}}
+</ul>
+{{end}}

@@ -1,0 +1,18 @@
+<button onclick="send('GET_home')">Return to main menu</button>
+<h1>Create Room</h1>
+<div>
+    Room Code: <b>{{.Code}}</b> 
+</div>
+<button onclick="send('start_game')">Start Game</button>
+<table>
+    <tr>
+    <th>Player</th>
+    <th>Score</th> 
+    </tr>
+    {{range .Players}}
+    <tr>
+        <td>{{.Name}}</td>
+        <td>{{.Score}}</td>
+    </tr>
+    {{end}}
+</table>
