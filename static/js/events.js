@@ -18,6 +18,7 @@ function update_name() {
 function submit_word() {
     var inp = document.getElementById('word_input');
     send('submit_word', inp.value);
+    inp.value = "";
 }
 
 // recieve events
@@ -51,7 +52,7 @@ function decrement_update() {
 
 function update_time(seconds=clock_time) {
     if (seconds < 0) {
-        stopInterval(repeater);
+        clearInterval(repeater);
         clock_time = undefined;
         return;
     }
@@ -66,7 +67,7 @@ function update_time(seconds=clock_time) {
 
     var game_time = document.getElementById("game_time");
     if (game_time == undefined) {
-        stopInterval(repeater);
+        clearInterval(repeater);
         clock_time = undefined;
         return;
     }
@@ -80,5 +81,16 @@ function update_game(json) {
 
     var time = json["data"]["SecondsLeft"];
     update_time(time);
+}
+
+function end_game(json) {
+    var header = document.getElementById("announcement");
+    header.innerHTML = json["data"];
+
+    var button = document.getElementById("back");
+    button.innerHTML = "Return to room";
+    button.onclick = function () {
+        send('Return_room');
+    }
 }
 

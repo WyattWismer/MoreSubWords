@@ -21,6 +21,8 @@ function recieve(socket_event) {
         case "game_update":
             update_game(json);
             break;
+        case "end_game":
+            end_game(json);
         default:
             console.log("Unsupported event type");
     }

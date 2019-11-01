@@ -2,8 +2,10 @@ package main
 
 import (
     "log"
+    "time"
     "sort"
     "strings"
+    "strconv"
 	"net/http"
     "io/ioutil"
     "math/rand"
@@ -57,7 +59,7 @@ type Record struct {
 type Game struct {
     Records []*Record
     Phrase string
-    TimeLeft int
+    SecondsLeft int
     Room *Room
 }
 
@@ -82,6 +84,16 @@ func applyTemplate(path string, data interface{}) string {
         log.Printf("Error templating %v when templating %v", err, path)
     }
     return out.String()
+}
+
+func (r *Room) sort_players() {
+    /*
+    sort.Slice(r.Players, func(i,j int) bool {
+        if r.Players[i].Score == r.Players[j].Score {
+            return g.R
+        }
+    })
+    */
 }
 
 func (r *Room) to_page_event() event {
@@ -130,16 +142,43 @@ type GameUpdate struct {
 
 func (g *Game) create_game_update() *GameUpdate {
     gu := &GameUpdate{}
-    gu.SecondsLeft = g.TimeLeft
+    gu.SecondsLeft = g.SecondsLeft
     gu.RecordInfo = applyTemplate("static/pages/game_records.html", g)
     return gu
 }
+
 
 func (g *Game) update_game() {
     e := &event{}
     e.Name = "game_update"
     e.Data = g.create_game_update()
     g.Room.broadcast(e)
+}
+
+func (g *Game) end_game() {
+    for _,p := range g.Room.Players {
+        for rank,rec := range g.Records {
+            if rec.Player == p {
+                p.Score += rec.Score
+                e := &event{}
+                e.Name = "end_game"
+                e.Data = "Your final rank was " + strconv.Itoa(rank+1)
+                p.Conn.WriteJSON(e)
+                break
+            }
+        }
+    }
+    g.Room.Game = nil
+}
+
+func (g *Game) time_game() {
+    for ; g.SecondsLeft > 0; g.SecondsLeft -= 1 {
+        time.Sleep(time.Second)
+        if g.SecondsLeft % 10 == 0 {
+            g.update_game()
+        }
+    }
+    g.end_game()
 }
 
 func (g *Game) word_is_substring(word string) bool {
@@ -181,10 +220,11 @@ func (r *Room) setup_game() {
     g.fill_game(r)
     r.Game = g
     g.Room = r
-    g.TimeLeft = 15
+    g.SecondsLeft = 15
     e := g.to_page_event()
     r.broadcast(e)
     g.update_game()
+    go g.time_game()
 }
 
 func (r *Room) add_player(p *Player) {
@@ -286,11 +326,19 @@ func serve_socket(w http.ResponseWriter, r *http.Request) {
         case "submit_word":
             if (p.Room == nil || p.Room.Game == nil) {
                 log.Println("No game running, word submission ignored");
+            } else {
+                p.Room.Game.submit_word(e.Data.(string), p)
             }
-            p.Room.Game.submit_word(e.Data.(string), p)
         case "GET_room":
             r := create_room()
             r.add_player(p)
+        case "Return_room":
+            if (p.Room == nil) {
+                log.Println("No room to return to");
+            } else {
+                e2 := p.Room.to_page_event()
+                conn.WriteJSON(e2)
+            }
         case "GET_join_room":
             e2 := event{}
             e2.Name = "show_page"
