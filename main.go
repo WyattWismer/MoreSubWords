@@ -9,12 +9,14 @@ import (
 	"net/http"
     "io/ioutil"
     "math/rand"
+    "encoding/json"
     "bytes"
     "html/template"
     "github.com/gorilla/websocket"
 )
 
 var room_lookup map[string]*Room
+var word_lookup map[string]int
 
 func generate_rune() rune {
     ind := rand.Intn(36)
@@ -59,6 +61,7 @@ type Record struct {
 type Game struct {
     Records []*Record
     Phrase string
+    IsUsed map[string]bool
     SecondsLeft int
     Room *Room
 }
@@ -181,8 +184,20 @@ func (g *Game) time_game() {
     g.end_game()
 }
 
+func setup_word_lookup() {
+    bytes, err := ioutil.ReadFile("words.json")
+    if err != nil {
+        panic(err)
+    }
+    json.Unmarshal(bytes, &word_lookup)
+}
+
 func is_word(word string) bool {
-    return true;
+    _, ok := word_lookup[strings.ToLower(word)]
+    if ok {
+        return true
+    }
+    return false
 }
 
 func (g *Game) is_substring(word string) bool {
@@ -230,8 +245,18 @@ func (g *Game) word_pts(word string) int {
     return result
 }
 
+func (g *Game) is_used(word string) bool {
+    _, ok := g.IsUsed[word]
+    if ok {
+        return true
+    }
+    return false
+}
+
 func (g *Game) submit_word(word string, p *Player) {
-    if (g.word_valid(word)) {
+    if (g.word_valid(word) && !g.is_used(word)) {
+        // mark word as used
+        g.IsUsed[word] = true
         // find record
         ind := -1
         for i,rec := range g.Records {
@@ -259,6 +284,7 @@ func (g *Game) to_page_event() *event {
 func (r *Room) setup_game() {
     g := create_game()
     g.fill_game(r)
+    g.IsUsed = make(map[string]bool)
     r.Game = g
     g.Room = r
     g.SecondsLeft = 15
@@ -297,8 +323,6 @@ func (r *Room) remove_player(p *Player) {
     r.update_room()
 }
 
-
-
 type Player struct {
     Name string
     Conn *websocket.Conn
@@ -310,7 +334,6 @@ var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 }
-
 
 func read_page(name string) string {
     bytes, err := ioutil.ReadFile("static/pages/" + name)
@@ -410,8 +433,9 @@ func serve_socket(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-    // init globals
+    // setup globals
     room_lookup = make(map[string]*Room)
+    setup_word_lookup()
 
     // serve static files
     fs := http.FileServer(http.Dir("static"))
