@@ -223,7 +223,11 @@ func (g *Game) word_valid(word string) bool {
 }
 
 func (g *Game) word_pts(word string) int {
-    return 100;
+    result := 100
+    for i := 0; i < len(word) - 1; i++ {
+        result *= 2
+    }
+    return result
 }
 
 func (g *Game) submit_word(word string, p *Player) {
