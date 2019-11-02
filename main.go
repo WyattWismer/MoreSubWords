@@ -181,8 +181,45 @@ func (g *Game) time_game() {
     g.end_game()
 }
 
-func (g *Game) word_is_substring(word string) bool {
+func is_word(word string) bool {
     return true;
+}
+
+func (g *Game) is_substring(word string) bool {
+    // prepare strings
+    word = strings.ToLower(word)
+    phrase := strings.ToLower(g.Phrase)
+
+    n := len(word)
+    m := len(phrase)
+    // Longest Common Subsequence
+    LCS := make([][]int, n)
+    for i := range(LCS) {
+        LCS[i] = make([]int, m)
+    }
+    for i := 0; i < n; i++ {
+        for j := 0; j < m; j++ {
+            if (word[i] == phrase[j]) {
+                LCS[i][j] = 1
+                if i > 0 && j > 0 {
+                    LCS[i][j] += LCS[i-1][j-1]
+                }
+            } else {
+                if i > 0 {
+                    LCS[i][j] = LCS[i-1][j]
+                }
+                if j > 0 && LCS[i][j-1] > LCS[i][j] {
+                    LCS[i][j] = LCS[i][j-1]
+                }
+            }
+        }
+    }
+    // substring iff all of word occurs in phrase
+    return LCS[n-1][m-1] == n;
+}
+
+func (g *Game) word_valid(word string) bool {
+    return is_word(word) && g.is_substring(word)
 }
 
 func (g *Game) word_pts(word string) int {
@@ -190,7 +227,7 @@ func (g *Game) word_pts(word string) int {
 }
 
 func (g *Game) submit_word(word string, p *Player) {
-    if (g.word_is_substring(word)) {
+    if (g.word_valid(word)) {
         // find record
         ind := -1
         for i,rec := range g.Records {
