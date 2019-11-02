@@ -23,7 +23,18 @@ function submit_word() {
 
 // recieve events
 function show_page(json) {
-    set_body(json["data"]);
+    var body_text = json["data"]
+    set_body(body_text);
+
+    // if this is game screen
+    var inp = document.getElementById('word_input');
+    if (inp != undefined) {
+        inp.addEventListener('keyup', (e) => {
+            if (e.key === "Enter") {
+                submit_word()
+            }
+        });
+    }
 }
 
 function wrong_code(json) {
