@@ -319,7 +319,7 @@ func (r *Room) setup_game() {
     g.add_phrase_words()
     r.Game = g
     g.Room = r
-    g.SecondsLeft = 15
+    g.SecondsLeft = 90
     e := g.to_page_event()
     r.broadcast(e)
     g.update_game()
@@ -465,6 +465,8 @@ func serve_socket(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+    // seed rng
+    rand.Seed(time.Now().UnixNano())
     // setup globals
     room_lookup = make(map[string]*Room)
     setup_word_lookup()
@@ -477,7 +479,7 @@ func main() {
     // accept websocket connections
 	http.HandleFunc("/ws", serve_socket)
 
-    err := http.ListenAndServe("localhost:8080", nil)
+    err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
