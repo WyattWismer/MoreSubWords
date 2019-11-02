@@ -18,6 +18,7 @@ import (
 
 var room_lookup map[string]*Room
 var word_lookup map[string]int
+var phrase_lookup []string
 
 func generate_rune() rune {
     ind := rand.Intn(36)
@@ -117,14 +118,23 @@ func (r *Room) update_room() {
     e := r.to_page_event()
     r.broadcast(&e)
 }
+func setup_phrase_lookup() {
+    bytes, err := ioutil.ReadFile("text/phrases.txt")
+    if err != nil {
+        log.Fatal(err)
+    }
+    raw := string(bytes)
+    phrase_lookup = strings.Split(raw,"\n")
+}
 
-func generate_phrase() string {
-    return "the cat in the hat is back"
+func get_phrase() string {
+    ind := rand.Intn(len(phrase_lookup))
+    return phrase_lookup[ind]
 }
 
 func create_game() *Game {
     g := &Game{}
-    g.Phrase = generate_phrase()
+    g.Phrase = get_phrase()
     g.Records = make([]*Record,0)
     return g
 }
@@ -186,9 +196,9 @@ func (g *Game) time_game() {
 }
 
 func setup_word_lookup() {
-    bytes, err := ioutil.ReadFile("words.json")
+    bytes, err := ioutil.ReadFile("text/words.json")
     if err != nil {
-        panic(err)
+        log.Fatal(err)
     }
     json.Unmarshal(bytes, &word_lookup)
 }
@@ -458,6 +468,7 @@ func main() {
     // setup globals
     room_lookup = make(map[string]*Room)
     setup_word_lookup()
+    setup_phrase_lookup()
 
     // serve static files
     fs := http.FileServer(http.Dir("static"))
