@@ -6,6 +6,7 @@ import (
     "sort"
     "strings"
     "strconv"
+    "unicode"
 	"net/http"
     "io/ioutil"
     "math/rand"
@@ -254,6 +255,7 @@ func (g *Game) is_used(word string) bool {
 }
 
 func (g *Game) submit_word(word string, p *Player) {
+    word = strings.ToLower(word)
     if (g.word_valid(word) && !g.is_used(word)) {
         // mark word as used
         g.IsUsed[word] = true
@@ -281,10 +283,30 @@ func (g *Game) to_page_event() *event {
     return e
 }
 
+func (g *Game) add_phrase_words() {
+    phrase := strings.ToLower(g.Phrase)
+    var sb strings.Builder
+    for _,r := range phrase {
+        if unicode.IsLetter(r) {
+            sb.WriteRune(r)
+        } else {
+            word := sb.String()
+            g.IsUsed[word] = true
+            sb.Reset()
+        }
+    }
+
+    if sb.Len() > 0 {
+        word := sb.String()
+        g.IsUsed[word] = true
+    }
+}
+
 func (r *Room) setup_game() {
     g := create_game()
     g.fill_game(r)
     g.IsUsed = make(map[string]bool)
+    g.add_phrase_words()
     r.Game = g
     g.Room = r
     g.SecondsLeft = 15
