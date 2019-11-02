@@ -313,9 +313,11 @@ func serve_socket(w http.ResponseWriter, r *http.Request) {
                 p.Room.remove_player(p)
             }
 
+            p.Score = 0
+
             e2 := event{}
             e2.Name = "show_page"
-            e2.Data = read_page("home.html")
+            e2.Data = applyTemplate("static/pages/home.html",p.Name)
             conn.WriteJSON(e2)
         case "start_game":
             if p.Room == nil {
