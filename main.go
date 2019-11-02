@@ -87,16 +87,16 @@ func applyTemplate(path string, data interface{}) string {
 }
 
 func (r *Room) sort_players() {
-    /*
     sort.Slice(r.Players, func(i,j int) bool {
         if r.Players[i].Score == r.Players[j].Score {
-            return g.R
+            return r.Players[i].Name < r.Players[j].Name
         }
+        return r.Players[i].Score > r.Players[j].Score
     })
-    */
 }
 
 func (r *Room) to_page_event() event {
+    r.sort_players()
     e := event{}
     e.Name = "show_page"
     e.Data = applyTemplate("static/pages/room.html", r)
