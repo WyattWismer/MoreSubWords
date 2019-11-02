@@ -444,6 +444,7 @@ func serve_socket(w http.ResponseWriter, r *http.Request) {
             conn.WriteJSON(e2)
         case "submit_room_code":
             code := e.Data.(string)
+            code = strings.ToUpper(code)
             r, ok := room_lookup[code]
             if ok {
                 r.add_player(p)
