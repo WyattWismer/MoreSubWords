@@ -22,6 +22,11 @@ type Game struct {
     Room *Room
 }
 
+type GameUpdate struct {
+    SecondsLeft int
+    RecordInfo string
+}
+
 func create_game(r *Room) *Game {
     g := &Game{
         Phrase: get_phrase(),
@@ -46,18 +51,12 @@ func (g *Game) add_players(players []*Player) {
     }
 }
 
-type GameUpdate struct {
-    SecondsLeft int
-    RecordInfo string
-}
-
 func (g *Game) create_game_update() *GameUpdate {
     gu := &GameUpdate{}
     gu.SecondsLeft = g.SecondsLeft
     gu.RecordInfo = applyTemplate("static/pages/game_records.html", g)
     return gu
 }
-
 
 func (g *Game) update_game() {
     e := &event{}
@@ -104,17 +103,21 @@ func (g *Game) word_pts(word string) int {
     return result
 }
 
-func (g *Game) is_used(word string) bool {
-    _, ok := g.IsUsed[word]
-    if ok {
-        return true
+func (g *Game) is_prefix(word string) bool {
+    for used := range g.IsUsed {
+        if strings.HasPrefix(word, used) {
+            return true
+        }
+        if strings.HasPrefix(used, word) {
+            return true
+        }
     }
     return false
 }
 
 func (g *Game) submit_word(word string, p *Player) {
     word = strings.ToLower(word)
-    if (g.word_valid(word) && !g.is_used(word)) {
+    if (g.word_valid(word) && !g.is_prefix(word)) {
         // mark word as used
         g.IsUsed[word] = true
         // find record
