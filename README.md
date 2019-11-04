@@ -22,7 +22,7 @@ Some possible substrings include:
 + 'ships'
 + ...
 
-In general, substring is any string that can be made by deleting characters in the original string.
+In general, a substring is any string that can be made by deleting characters in the original string.
 
 Out of these substrings the english words were:
 + 'sail'
