@@ -1,18 +1,63 @@
-<button onclick="send('GET_home')">Return to main menu</button>
-<h1>Create Room</h1>
-<div>
-    Room Code: <b>{{.Code}}</b> 
-</div>
-<button onclick="send('start_game')">Start Game</button>
-<table>
-    <tr>
-    <th>Player</th>
-    <th>Score</th> 
-    </tr>
-    {{range .Players}}
-    <tr>
-        <td>{{.Name}}</td>
-        <td>{{.Score}}</td>
-    </tr>
-    {{end}}
-</table>
+<section class="hero is-success is-fullheight">
+  <div class="hero-head">
+    <header class="navbar">
+        <div class="navbar-menu">
+          <div class="navbar-brand">
+            <span class="navbar-item">
+              <a class="button is-success is-outlined is-inverted" onclick="send('GET_home')">
+                <span class="icon">
+                  <i class="fas fa-home"></i>
+                </span>
+              </a>
+            </span>
+          </div>
+        </div>
+    </header>
+  </div>
+
+
+  <div class="hero-body">
+        <div class="container is-fluid has-text-centered">
+            <div class="columns is-centered">
+                <div class="column is-narrow">
+                    <div class="card">
+                      <div class="card-content">
+                        <p class="title has-text-black">
+                            {{.Code}}
+                        </p>
+                        <p class="subtitle has-text-grey">
+                            Room Code
+                        </p>
+                        <p class="button is-dark" onclick="send('start_game')">
+                                Start Game
+                        </p>
+                      </div>
+                    </div>
+                    </br>
+                    <div class="container has-text-centered">
+                        <div class="columns is-mobile">
+                            <div class="column is-half">
+                                <strong>Player</strong>
+                                {{range .Players}}
+                                </br><span>{{.Name}}</span>
+                                {{end}}
+                            </div>
+                            <div class="column is-half">
+                                <strong>Score</strong>
+                                {{range .Players}}
+                                </br><span>{{.Score}}</span>
+                                {{end}}
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+
+          </br>
+          </br>
+          </br>
+        </div>
+
+  </div>
+</section>
+

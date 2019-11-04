@@ -1,6 +1,65 @@
-<h1>More Subwords</h1>
-<div>
-    Name: <input type="text" id="name_input" value="{{.}}">
-</div>
-<button onclick="update_name();send('GET_room')">Create room</button>
-<button onclick="update_name();send('GET_join_room')">Join room</button>
+<section class="hero is-success is-fullheight">
+  <div class="hero-head">
+    <header class="navbar">
+      <div class="container">
+        <div class="navbar-menu is-active">
+          <div class="navbar-end">
+            <span class="navbar-item">
+              <a class="button is-success is-outlined is-inverted" href="https://github.com/WyattWismer/MoreSubWords">
+                <span class="icon">
+                  <i class="fab fa-github"></i>
+                </span>
+                <span>View Source</span>
+              </a>
+            </span>
+            <span class="navbar-item">
+              <a class="button is-success is-outlined is-inverted" href="https://github.com/WyattWismer/MoreSubWords/issues">
+                <span class="icon">
+                  <i class="fas fa-bug"></i>
+                </span>
+                <span>Report Bug</span>
+              </a>
+            </span>
+          </div>
+        </div>
+      </div>
+    </header>
+  </div>
+
+  <div class="hero-body">
+    <div class="container has-text-centered">
+      <h1 class="title">
+        More Subwords
+      </h1>
+      <h2 class="subtitle">
+        A game about finding words
+      </h2>
+      <div class="field has-addons has-addons-centered is-rounded">
+          <p class="control">
+            <a class="button is-static is-rounded">
+                Name
+            </a>
+          </p>
+          <p class="control">
+          <input class="input is-rounded" id="name_input" type="text" placeholder="{{.}}">
+          </p>
+      </div>
+      <div class="field is-grouped is-grouped-centered">
+          <p class="control">
+            <a class="button is-success is-dark is-rounded" onclick="update_name();send('GET_room')">
+                Create Room
+            </a>
+          </p>
+          <p class="control">
+            <a class="button is-success is-dark is-rounded" onclick="update_name();send('GET_join_room')">
+                Join Room
+            </a>
+          </p>
+      </div>
+      </br>
+      </br>
+      </br>
+      </br>
+    </div>
+  </div>
+</section>

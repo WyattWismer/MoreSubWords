@@ -1,10 +1,74 @@
-<button id="back" onclick="send('GET_home')">Return to main menu</button>
-<h2 id="announcement"></h2>
-<h1 style="float:right" id="game_time"></h1>
-<b style="float:center">{{.Phrase}}</b>
-<div>
-    <input type="text" id="word_input">
-    <button id="submit" onclick="submit_word()">Enter</button>
-</div>
-<div id="game_records">
+<section class="hero is-success">
+  <div class="hero-head">
+    <header class="navbar">
+        <div class="navbar-menu">
+          <div class="navbar-brand">
+            <span class="navbar-item">
+              <a id="back" class="button is-success is-outlined is-inverted" onclick="send('GET_home')">
+                <span class="icon">
+                  <i class="fas fa-home"></i>
+                </span>
+              </a>
+            </span>
+          </div>
+          <div class="navbar-end">
+            <span class="navbar-item">
+                <h1 class="is-size-1" id="game_time"></h1>
+            </span>
+          </div>
+        </div>
+    </header>
+  </div>
+
+  <div class="hero-body">
+    <div class="container has-text-centered">
+      <h1 class="title">
+          {{.Phrase}}
+      </h1>
+      </br>
+      </br>
+      </br>
+    </div>
+  </div>
+</section>
+</br>
+<section>
+    <div class="container has-text-centered">
+        <div class="field has-addons has-addons-centered">
+          <p class="control">
+          <input class="input is-rounded" id="word_input" type="text" placeholder="subword">
+          </p>
+          <p class="control">
+            <a class="button is-success is-rounded" onclick="submit_word()">
+                Submit
+            </a>
+          </p>
+        </div>
+        <p class="help is-danger is-centered" id="wrong_because">
+        <span>&nbsp;<span>
+        </p>
+    </div>
+</section>
+</br>
+<section id="game_records">
+</section>
+
+<div class="modal" id="announcement-modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="container is-fluid has-text-centered">
+            <div class="column is-narrow">
+                <div class="card">
+                    <div class="card-content">
+                      <h1 class="is-size-1 has-text-weight-bold"id="announcement">
+                      </h1>
+                      <a class="button is-dark" onclick="send('Return_room')">
+                          Return to room
+                      </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close" onclick="close_modal();"></button>
 </div>

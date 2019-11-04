@@ -19,6 +19,9 @@ function submit_word() {
     var inp = document.getElementById('word_input');
     send('submit_word', inp.value);
     inp.value = "";
+
+    var helper = document.getElementById("wrong_because");
+    helper.innerHTML = "&nbsp;"
 }
 
 // recieve events
@@ -39,8 +42,17 @@ function show_page(json) {
 
 function wrong_code(json) {
     var info_box = document.getElementById("info_box");
-    info_box.innerHTML = "Can not find a room with this code";
+    info_box.innerHTML = "Could not find a room with this code";
+
+    var code_input = document.getElementById("code_input");
+    code_input.classList.add("is-danger");
 }
+
+function wrong_because(json) {
+    var helper = document.getElementById("wrong_because");
+    helper.innerHTML = json["data"];
+}
+
 
 function format_seconds(time) {
     var min = parseInt(time/60);
@@ -49,6 +61,9 @@ function format_seconds(time) {
     if (min > 0) {
         res += min;
         res += ':';
+        if (sec < 10) {
+            res += '0';
+        }
     }
     res += sec;
     return res; 
@@ -95,13 +110,22 @@ function update_game(json) {
 }
 
 function end_game(json) {
-    var header = document.getElementById("announcement");
-    header.innerHTML = json["data"];
+    var rank_text = document.getElementById("announcement");
+    rank_text.innerHTML = json["data"];
+
+    var modal = document.getElementById("announcement-modal");
+    modal.classList.add("is-active");
+
 
     var button = document.getElementById("back");
     button.innerHTML = "Return to room";
     button.onclick = function () {
         send('Return_room');
     }
+}
+
+function close_modal() {
+    var modal = document.getElementById("announcement-modal");
+    modal.classList.remove("is-active");
 }
 
