@@ -105,6 +105,7 @@ func (r *Room) remove_player(p *Player) {
     for i,p2 := range arr {
         if p2 == p {
             to_del = i
+            break
         }
     }
     if to_del != -1 {
@@ -119,5 +120,11 @@ func (r *Room) remove_player(p *Player) {
         log.Printf("Removed room %v", r.Code)
     }
     p.Room = nil
-    r.update_room()
+    if r.Game == nil {
+        // in room
+        r.update_room()
+    } else {
+        // in game
+        r.Game.remove_player(p)
+    }
 }

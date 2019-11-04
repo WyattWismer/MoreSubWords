@@ -1,6 +1,7 @@
 package main
 
 import (
+    "fmt"
     "strings"
     "strconv"
     "time"
@@ -72,7 +73,7 @@ func (g *Game) end_game() {
                 p.Score += rec.Score
                 e := &event{}
                 e.Name = "end_game"
-                e.Data = "Your final rank was " + strconv.Itoa(rank+1)
+                e.Data = "Your final rank was #" + strconv.Itoa(rank+1)
                 p.Conn.WriteJSON(e)
                 break
             }
@@ -91,8 +92,24 @@ func (g *Game) time_game() {
     g.end_game()
 }
 
-func (g *Game) word_valid(word string) bool {
-    return is_word(word) && is_substring(word, g.Phrase)
+func (g *Game) word_valid(word string) *event {
+    if ok := is_word(word); !ok {
+        e := &event{
+            Name: "wrong_because",
+            Data: fmt.Sprintf("%v not an english word", word),
+        }
+        return e
+    }
+
+    if ok := is_substring(word, g.Phrase); !ok {
+        e := &event{
+            Name: "wrong_because",
+            Data: fmt.Sprintf("%v is not a subword", word),
+        }
+        return e
+    }
+
+    return nil
 }
 
 func (g *Game) word_pts(word string) int {
@@ -103,38 +120,51 @@ func (g *Game) word_pts(word string) int {
     return result
 }
 
-func (g *Game) is_prefix(word string) bool {
+func (g *Game) is_prefix(word string) (string, string) {
     for used := range g.IsUsed {
         if strings.HasPrefix(word, used) {
-            return true
+            return word, used
         }
         if strings.HasPrefix(used, word) {
-            return true
+            return used, word
         }
     }
-    return false
+    return "",""
 }
 
 func (g *Game) submit_word(word string, p *Player) {
     word = strings.ToLower(word)
-    if (g.word_valid(word) && !g.is_prefix(word)) {
-        // mark word as used
-        g.IsUsed[word] = true
-        // find record
-        ind := -1
-        for i,rec := range g.Records {
-            if rec.Player == p {
-                ind = i
-                break
-            }
-        }
-        g.Records[ind].Score += g.word_pts(word)
-        g.Records[ind].Words = append(g.Records[ind].Words, word)
-        sort.Slice(g.Records, func(i,j int) bool {
-            return g.Records[i].Score > g.Records[j].Score
-        })
-        g.update_game()
+
+    if e := g.word_valid(word); e != nil {
+        p.Send(e)
+        return
     }
+
+    if wrd, prx := g.is_prefix(word); wrd != "" {
+        e := &event{
+            Name: "wrong_because",
+            Data: fmt.Sprintf("%v is a prefix of %v", prx, wrd),
+        }
+        p.Send(e)
+        return
+    }
+
+    // mark word as used
+    g.IsUsed[word] = true
+    // find record
+    ind := -1
+    for i,rec := range g.Records {
+        if rec.Player == p {
+            ind = i
+            break
+        }
+    }
+    g.Records[ind].Score += g.word_pts(word)
+    g.Records[ind].Words = append(g.Records[ind].Words, word)
+    sort.Slice(g.Records, func(i,j int) bool {
+        return g.Records[i].Score > g.Records[j].Score
+    })
+    g.update_game()
 }
 
 func (g *Game) to_page_event() *event {
@@ -152,13 +182,32 @@ func (g *Game) add_phrase_words() {
             sb.WriteRune(r)
         } else {
             word := sb.String()
-            g.IsUsed[word] = true
-            sb.Reset()
+            if len(word) > 0 {
+                g.IsUsed[word] = true
+                sb.Reset()
+            }
         }
     }
 
     if sb.Len() > 0 {
         word := sb.String()
         g.IsUsed[word] = true
+    }
+}
+
+func (g *Game) remove_player(p *Player) {
+    // find & delete player
+    to_del := -1
+    arr := g.Records
+    for i,rec := range arr {
+        if rec.Player == p {
+            to_del = i
+            break
+        }
+    }
+    if to_del != -1 {
+        arr[to_del] = arr[len(arr)-1]
+        arr = arr[:len(arr)-1]
+        g.Records = arr
     }
 }

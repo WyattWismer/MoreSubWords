@@ -65,7 +65,11 @@ func serve_socket(w http.ResponseWriter, r *http.Request) {
             if !p.InGame() {
                 log.Println("No game running, word submission ignored");
             } else {
-                p.Room.Game.submit_word(e.Data.(string), p)
+                s := e.Data.(string)
+                s = strings.TrimSpace(s)
+                if len(s) > 0 {
+                    p.Room.Game.submit_word(e.Data.(string), p)
+                }
             }
         case "GET_room":
             r := create_room()
@@ -97,7 +101,11 @@ func serve_socket(w http.ResponseWriter, r *http.Request) {
                 p.Send(e2)
             }
         case "set_name":
-            p.Name = e.Data.(string)
+            s := e.Data.(string)
+            s = strings.TrimSpace(s)
+            if len(s) > 0 {
+                p.Name = s
+            }
         default:
             log.Println("Unsupported event type")
         }

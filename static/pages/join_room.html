@@ -1,7 +1,49 @@
-<button onclick="send('GET_home')">Return to main menu</button>
-<h1>Join Room</h1>
-<div>
-    Room Code: <input type="text" id="code_input">
-</div>
-<p id="info_box"></p>
-<button onclick="send_code()">Enter</button>
+<section class="hero is-success is-fullheight">
+  <div class="hero-head">
+    <header class="navbar">
+        <div class="navbar-menu">
+          <div class="navbar-brand">
+            <span class="navbar-item">
+              <a class="button is-success is-outlined is-inverted" onclick="send('GET_home')">
+                <span class="icon">
+                  <i class="fas fa-home"></i>
+                </span>
+              </a>
+            </span>
+          </div>
+        </div>
+    </header>
+  </div>
+
+  <div class="hero-body">
+    <div class="container has-text-centered">
+      <h1 class="title">
+          Join Room
+      </h1>
+      <div class="field has-addons has-addons-centered is-rounded">
+          <p class="control">
+            <a class="button is-static is-rounded">
+                Room Code
+            </a>
+          </p>
+          <p class="control">
+          <input class="input is-rounded" id="code_input" type="text" placeholder="ABCD">
+          </p>
+      </div>
+      <p class="help" id="info_box">
+      </p>
+      <div class="field is-grouped is-grouped-centered">
+          <p class="control">
+            <a class="button is-success is-dark is-rounded" onclick="send_code()">
+                Submit
+            </a>
+          </p>
+      </div>
+      </br>
+      </br>
+      </br>
+      </br>
+    </div>
+  </div>
+</section>
+

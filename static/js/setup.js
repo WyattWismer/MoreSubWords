@@ -23,6 +23,10 @@ function recieve(socket_event) {
             break;
         case "end_game":
             end_game(json);
+            break;
+        case "wrong_because":
+            wrong_because(json);
+            break;
         default:
             console.log("Unsupported event type");
     }
