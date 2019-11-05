@@ -1,7 +1,9 @@
 # More Subwords
 
 **More Subwords** is a game where you are given a phrase and must find *subwords* in that phrase.
-     
+
+You can play the game [here](http://moresubwords.herokuapp.com/)
+
 ## Instructions
 We define a *subword* as any word that:
 1. Is a substring of the phrase
