@@ -33,13 +33,16 @@ Out of these substrings the english words were:
 + 'tight'
 + 'ships'
 
-To make the game more challenging  you only score points for subwords that:
+To make the game more challenging you only score points for subwords that:
 1. Are not a prefix of an existing word
 2. Do not have an existing word as their prefix
+> Note: These rules may change in the future as players give feedback
 
 So in the example above we cannot get points for:
 + 'sail' since it is a prefix of 'sailing'
 + 'ships' since 'ship' is a prefix of ship
+
+
 
 ## Sources for Words & Phrases
 
